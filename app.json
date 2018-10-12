@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "hambriento-front",
+    "description": "This project is really great.",
+    "slug": "hambriento-front",
+    "privacy": "public",
+    "sdkVersion": "30.0.0",
+    "platforms": ["ios", "android"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.ham.app",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDwyWF6cRr2J4VThv41GHvAyAjtNy4efqU"
+        }
+      }
+    }
+  }
+}

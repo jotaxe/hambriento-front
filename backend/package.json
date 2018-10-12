@@ -1,0 +1,54 @@
+{
+  "name": "backend",
+  "description": "",
+  "version": "0.0.0",
+  "homepage": "",
+  "main": "src",
+  "keywords": [
+    "feathers"
+  ],
+  "author": {
+    "name": "Juan Edwards",
+    "email": "juan.edwards@mail.udp.cl"
+  },
+  "contributors": [],
+  "bugs": {},
+  "directories": {
+    "lib": "src",
+    "test": "test/"
+  },
+  "engines": {
+    "node": "^8.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "scripts": {
+    "test": "npm run eslint && npm run mocha",
+    "eslint": "eslint src/. test/. --config .eslintrc.json",
+    "dev": "nodemon src/",
+    "start": "node src/",
+    "mocha": "mocha test/ --recursive --exit"
+  },
+  "dependencies": {
+    "@feathersjs/authentication": "^2.1.11",
+    "@feathersjs/authentication-jwt": "^2.0.5",
+    "@feathersjs/authentication-local": "^1.2.5",
+    "@feathersjs/configuration": "^2.0.4",
+    "@feathersjs/errors": "^3.3.4",
+    "@feathersjs/express": "^1.2.7",
+    "@feathersjs/feathers": "^3.2.3",
+    "compression": "^1.7.3",
+    "cors": "^2.8.4",
+    "feathers-nedb": "^3.1.0",
+    "helmet": "^3.14.0",
+    "nedb": "^1.8.0",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.17.3",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  }
+}
