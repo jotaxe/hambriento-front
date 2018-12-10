@@ -103,6 +103,8 @@ class Login extends Component {
       .then((response) => response.json())
       .then((responseJSON) => {
         this.saveItem('token', responseJSON.data.token);
+        this.saveItem('email', responseJSON.data.email);
+        this.saveItem('username', this.state.username);
         this.props.navigation.navigate("Home")
       })
       .catch((error) => {
