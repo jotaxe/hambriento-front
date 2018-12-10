@@ -103,7 +103,7 @@ class Login extends Component {
       .then((response) => response.json())
       .then((responseJSON) => {
         this.saveItem('token', responseJSON.data.token);
-        this.props.navigation.navigate("MapScreen")
+        this.props.navigation.navigate("Home")
       })
       .catch((error) => {
         console.log(error)
