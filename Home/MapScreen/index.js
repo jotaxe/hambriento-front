@@ -2,23 +2,12 @@ import React from 'react';
 import { MapView } from 'expo';
 import {View} from 'react-native';
 import Modal from "./restaurantModal";
+import utility from '../../utility';
 
 function getRestaurants(){
-    return [{
-        id: 1,
-        name: "restaurant 1",
-        owner: "test1",
-        appreciation: "5",
-        latitude: -33.452342,
-        longitude: -70.660966
-    },{
-        id: 2,
-        name: "restaurant 2",
-        owner: "test2",
-        appreciation: "4",
-        latitude: -33.452640,
-        longitude: -70.660464
-    }]
+    return fetch('http://'+ utility.ip +':4242/restaurants', {
+        method: 'GET'
+    });
 }
 
 export default class MapScreen extends React.Component {
@@ -49,8 +38,8 @@ export default class MapScreen extends React.Component {
         },
         );
 
-        Promise.resolve(getRestaurants()).then((restaurants) => {
-            this.setState({restaurants});
+        Promise.resolve(getRestaurants()).then((res) => {
+            res.json().then((restaurants) => this.setState({restaurants: restaurants.data}))
         }).catch((error) => {console.log(error);});
 
     }
@@ -90,8 +79,8 @@ export default class MapScreen extends React.Component {
                 initialRegion={{
                 latitude: lat || -33.452642,
                 longitude: long || -70.660966,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
+                latitudeDelta: 0.0003,
+                longitudeDelta: 0.003,
                 }}
             >
 

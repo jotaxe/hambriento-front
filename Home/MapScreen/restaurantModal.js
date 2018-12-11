@@ -1,32 +1,17 @@
 import React, { Component } from 'react'
 import {Modal, View, Text, FlatList, StyleSheet, TouchableOpacity} from "react-native";
 import {ListItem, Badge} from "react-native-elements";
+import utility from '../../utility';
 
-function getFood(restName){
-
-    const foods = [{
-        id: 1,
-        name: "handroll",
-        restaurantName: "restaurant 1",
-        price: "1000",
-        appreciation: 5
-
-    },{
-        id: 2,
-        name: "hamburguesa de soya",
-        restaurantName: "restaurant 1",
-        price: "1000",
-        appreciation: 3
-    },{
-        id: 3,
-        name: "sopaipillas",
-        restaurantName: "restaurant 2",
-        price: "150",
-        appreciation: 5
-
-    }]
-    return foods.map((food) => food.restaurantName === restName ? food : null).filter((food) => food);
-}
+function getFood(current) {
+    return fetch('http://'+ utility.ip +':4242/menu?restaurantName='+current, {
+      method: 'GET',
+      headers: {
+        "content-type": "application/json",
+        "Accept": "application/json",
+      },
+    })
+  }
 
 export default class RestaurantModal extends Component {
     constructor(props){
@@ -38,12 +23,12 @@ export default class RestaurantModal extends Component {
     }
     componentDidMount = () => {
         const {name} = this.props;
-      Promise.resolve(getFood(name)).then((foods) => {this.setState({foods})});
+        Promise.resolve(getFood(name)).then((response) => response.json().then((food) => { console.log("data: ", food.data); this.setState({foods: food.data})}))
     }
 
     componentDidUpdate(prevProps, prevState) {
         if(prevProps.name !== this.props.name){
-            Promise.resolve(getFood(this.props.name)).then((foods) => {this.setState({foods})});
+            Promise.resolve(getFood(name)).then((response) => response.json().then((food) => { console.log(food); this.setState({foods: food.data})}))
         }
     }
     
@@ -80,7 +65,7 @@ export default class RestaurantModal extends Component {
                                 />
                             )
                         }
-                     />
+                     /> 
                     <View style={styles.innerContainer}>    
                         <TouchableOpacity style={styles.button} onPress={this.props.handlePress}>
                             <Text
@@ -112,9 +97,12 @@ const styles = StyleSheet.create({
     modalContainer: {
         justifyContent: 'center',
         height: 300,
-        backgroundColor: 'white',
+        backgroundColor: '#fafafa',
         borderRadius: 10,
         marginTop: 100,
+        marginLeft: 10,
+        marginRight: 10,
+        borderColor: "black"
     },
     tituloModal: {
         marginTop: 0,
