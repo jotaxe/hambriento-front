@@ -27,6 +27,7 @@ export default class RestaurantModal extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
+        const {name} = this.props;
         if(prevProps.name !== this.props.name){
             Promise.resolve(getFood(name)).then((response) => response.json().then((food) => { console.log(food); this.setState({foods: food.data})}))
         }
