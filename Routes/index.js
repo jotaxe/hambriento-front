@@ -1,15 +1,23 @@
-import { createStackNavigator } from 'react-navigation';
+import { createStackNavigator, createSwitchNavigator } from 'react-navigation';
 
 import Login from "../Login";
 import Singup from "../Singup";
 import Home from "../Home/Home.js";
 
-export default Routes = createStackNavigator({
+
+const AuthStack = createStackNavigator({
     Login: Login,
-    Home: Home,
     Singup: Singup
+},
+{
+    initialRouteName: "Login"
+});
+
+export default Routes = createSwitchNavigator({
+    Auth: AuthStack,
+    Home: Home,
 
 },
 {
-    initialRouteName: 'Login'
+    initialRouteName: 'Auth'
 });
