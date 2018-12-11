@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, AsyncStorage } from 'react-native';
+import { Text, View, TouchableOpacity, AsyncStorage, Alert } from 'react-native';
 import { Body, List, ListItem, Input, Right } from 'native-base';
 
 import utility from '../../utility';

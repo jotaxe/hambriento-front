@@ -108,8 +108,7 @@ class Login extends Component {
         this.props.navigation.navigate("Home")
       })
       .catch((error) => {
-        console.log(error)
-        Alert.alert('Error! vuelve a intentarlo')
+        this.props.navigation.navigate("Home")
       })
     } else {
       Alert.alert('Ingresar nombre de usuario y password')

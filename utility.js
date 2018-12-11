@@ -1,5 +1,5 @@
 const utility = {
-  ip: "192.168.0.16"
+  ip: "10.20.10.97"
 }
 
 export default utility;
