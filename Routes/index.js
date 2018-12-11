@@ -11,5 +11,5 @@ export default Routes = createStackNavigator({
 
 },
 {
-    initialRouteName: 'Login'
+    initialRouteName: 'Home'
 });
