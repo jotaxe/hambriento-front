@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, TouchableOpacity, AsyncStorage, Modal, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, AsyncStorage, Modal, StyleSheet, TextInput } from 'react-native';
 import { Body, List, ListItem, Input, Right } from 'native-base';
 
 import utility from '../../utility';
@@ -9,7 +9,11 @@ class RestaurantScreen extends Component {
     restaurants: [],
     foods: [],
     visible: false,
-    currentRestaurant: ""
+    visibleFood: false,
+    currentRestaurant: "",
+    foodName:"",
+    foodPrice:"",
+    restaurantName:""
   }
 
   fetchRestaurants() {
@@ -27,7 +31,7 @@ class RestaurantScreen extends Component {
       })
       .catch((error) => {
         console.log(error)
-        Alert.alert('Error! vuelve a intentarlo')
+        alert('Error! vuelve a intentarlo')
       })
     })
   }
@@ -42,12 +46,11 @@ class RestaurantScreen extends Component {
     })
     .then((response) => response.json())
     .then((responseJSON) => {
-      console.log(responseJSON)
       this.setState({foods: responseJSON.data})
     })
     .catch((error) => {
       console.log(error)
-      Alert.alert('Error! vuelve a intentarlo')
+      alert('Error! vuelve a intentarlo')
     })
   }
 
@@ -57,6 +60,80 @@ class RestaurantScreen extends Component {
 
   toggleModal(visible, currentRestaurant) {
     this.setState({ visible: visible, currentRestaurant: currentRestaurant });
+  }
+
+  fetchNewFood(){
+    const price = parseInt(this.state.foodPrice)
+    fetch('http://'+ utility.ip +':4242/new-food', {
+      method: 'POST',
+      headers: {
+        "content-type": "application/json",
+        "Accept": "application/json",
+      },
+      body: JSON.stringify({
+        name: this.state.foodName,
+        price: price,
+        resturanteName: this.state.currentRestaurant,
+        appreciaton: 5
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJSON) => {
+      alert('Comida agregada!')
+      this.fetchFood(this.state.currentRestaurant)
+    })
+    .catch((error) => {
+      console.log(error)
+      alert('Error! vuelve a intentarlo')
+    })
+  }
+
+  fetchNewRestaurant(){
+    const { restaurantName } = this.state;
+    AsyncStorage.getItem('username', (err, username) => {
+      navigator.geolocation.getCurrentPosition( (position) => {
+        console.log("lala")
+        fetch('http://'+utility.ip+':4242/new-restaurant', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({
+            name: restaurantName,
+            appreciaton: 5,
+            owner: username,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }),
+        })
+        .then(response => response.json())
+        .then(responseJSON => {
+          alert('Local agregado!')
+          this.fetchRestaurants()
+        })
+        .catch(error => alert(error))
+      });
+    })
+  }
+
+  fetchEraseFood(name, restaurant){
+    fetch('http://'+ utility.ip +':4242/erase-food?foodName='+name+'&restaurantName='+restaurant, {
+      method: 'GET',
+      headers: {
+        "content-type": "application/json",
+        "Accept": "application/json",
+      },
+    })
+    .then((response) => response.json())
+    .then((responseJSON) => {
+      alert('Comida eliminada!')
+      this.fetchFood(this.state.currentRestaurant)
+    })
+    .catch((error) => {
+      console.log(error)
+      alert('Error! vuelve a intentarlo')
+    })
   }
 
   restaurantsList(){
@@ -91,7 +168,7 @@ class RestaurantScreen extends Component {
           </Body>
           <Right>
             <View style={{flexDirection:'row'}}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => {this.fetchEraseFood(current.name, this.state.currentRestaurant)}}>
                 <Text style={{color:"red"}}> Eliminar </Text>
               </TouchableOpacity>
             </View>
@@ -104,7 +181,7 @@ class RestaurantScreen extends Component {
   render() {
     return (
       <View style={{ flex: 1, paddingTop: 10}}>
-        <Modal animationType = {"slide"} transparent = {false}
+        <Modal className="MenuList" animationType = {"slide"} transparent = {false}
           visible = {this.state.visible}
         >
           <View style={{flexDirection:'row', paddingTop: 70, paddingLeft: 25}}>
@@ -112,16 +189,43 @@ class RestaurantScreen extends Component {
               {this.state.currentRestaurant}
             </Text>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => {this.fetchNewFood()}}>
               <Text style={{fontWeight: "bold", color: "#00AEEF",  fontSize: 30}}>
                 +
               </Text>
             </TouchableOpacity>
           </View>
 
-          <List style={{marginRight:17, paddingTop:30}}>
-            {this.foodsList()}
-          </List>
+          <TextInput
+            editable={true}
+            placeholder='Nombre del producto'
+            placeholderTextColor="rgba(255,255,255,0.7)"
+            ref='foodName'
+            autoCapitalize='none'
+            style={styles.inputText}
+            onChangeText={(foodName) => this.setState({ foodName })}
+            value={this.state.foodName}
+          />
+
+          <TextInput
+            editable={true}
+            placeholder='Precio'
+            placeholderTextColor="rgba(255,255,255,0.7)"
+            ref='foodPrice'
+            autoCapitalize='none'
+            style={styles.inputText}
+            onChangeText={(foodPrice) => this.setState({ foodPrice })}
+            value={this.state.foodPrice}
+          />
+
+
+          { !this.state.foods ?
+             <Text style={{textAlign:'center'}}> No hay comidas :( </Text>
+              :
+              <List style={{marginRight:17, paddingTop:30}}>
+                {this.foodsList()}
+              </List>
+          }
 
           <TouchableOpacity
             style={styles.buttonLogin}
@@ -138,14 +242,32 @@ class RestaurantScreen extends Component {
             Mis Locales
           </Text>
 
-          <TouchableOpacity>
-            <Text style={{fontWeight: "bold", color: "#00AEEF",  fontSize: 34}}> + </Text>
+          <TouchableOpacity onPress={() => { this.fetchNewRestaurant() }}>
+            <Text style={{fontWeight: "bold", color: "#00AEEF",  fontSize: 34}}>
+              +
+            </Text>
           </TouchableOpacity>
         </View>
 
-        <List style={{marginRight:17}}>
-          {this.restaurantsList()}
-        </List>
+        <TextInput
+          editable={true}
+          placeholder='Nuevo Local'
+          placeholderTextColor="rgba(255,255,255,0.7)"
+          ref='restaurantName'
+          autoCapitalize='none'
+          style={styles.inputText}
+          onChangeText={(restaurantName) => this.setState({ restaurantName })}
+          value={this.state.restaurantName}
+        />
+
+        { !this.state.restaurants ?
+           <Text style={{textAlign:'center'}}> No hay locales :( </Text>
+            :
+            <List style={{marginRight:17}}>
+              {this.restaurantsList()}
+            </List>
+        }
+
       </View>
 
     );
@@ -177,13 +299,14 @@ const styles = StyleSheet.create({
   inputText: {
     width: 300,
     height: 40,
-    backgroundColor: 'transparent',
-    borderBottomColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: 'grey',
+    borderBottomColor: 'grey',
     borderBottomWidth: 2,
     marginTop: 10,
     marginBottom: 10,
     padding: 10,
-    color: '#FFF',
+    left: "5%",
+    color: 'white',
     position: 'relative',
     flexDirection: 'row',
     textAlign: 'center'
